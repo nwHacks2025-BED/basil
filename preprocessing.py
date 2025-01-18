@@ -10,8 +10,10 @@ def load_dataframe_from_json(file_path):
 
 def main():
     df = load_dataframe_from_json('OLD.json')
-    print(df.head())
-    df.to_csv('test.csv', header=False, index=False)
+    df = df.loc[:, ['job_id', 'company', 'job_title_', 'duration', 'job_location', 'country',
+                    'job_description', 'cover_letter_required?', 'important_urls']]
+    df.to_csv('data.csv', header=df.columns.to_list(), index=False)
+
 
 
 if __name__ == "__main__":
