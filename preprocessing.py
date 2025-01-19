@@ -1,12 +1,12 @@
 import json
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-# from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier
 
 from sklearn.compose import make_column_transformer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, FunctionTransformer
 
 CSV_FILE_NAME = "data.csv"
@@ -124,11 +124,20 @@ def preprocess_from_csv():
         ("passthrough", pass_feature),
         ("drop", drop_features),
     )
+
+    return preprocessor, df
+
+
+def train_model(preprocessor, df):
     df_trans = preprocessor.fit_transform(df)
     feature_names = preprocessor.get_feature_names_out()
-    pd.DataFrame(df_trans, columns=feature_names).to_csv("preprocessed_data.csv", index=False)
+    # TODO - feature names are using pipelines (but functional)
+    X = pd.DataFrame(df_trans, columns=feature_names)
 
-    return preprocessor
+    # train model
+    model = LGBMClassifier()
+    model.fit(X)
+    return model
 
 
 def main():
@@ -136,7 +145,10 @@ def main():
     save_relevant_features_to_csv(full_df)
 
     # preprocess features
-    preprocessor = preprocess_from_csv()
+    preprocessor, df = preprocess_from_csv()
+
+    # train model
+    train_model(preprocessor, df)
 
 
 if __name__ == "__main__":
