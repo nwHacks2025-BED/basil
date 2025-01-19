@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import FastAPI, APIRouter, Body, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from typing import List
 import pymongo
@@ -15,6 +15,14 @@ router = APIRouter()
 app = FastAPI()
 
 
+class Request:
+    def __init__(self, database):
+        self.app = type('obj', (object,), {'database': database})
+
+
+requests = Request(database)
+
+
 class MongoAPI:
     @router.get(
         "/unlabelled_get",
@@ -22,10 +30,9 @@ class MongoAPI:
         response_model=List[UnlabeledJob],
         status_code=status.HTTP_200_OK
     )
-    def get_unlabelled_data(request: Request):
-        unlabelled_data = list(request.app.database["unlabelled"].find())
+    def get_unlabelled_data():
+        unlabelled_data = list(requests.app.database["unlabelled"].find())
         return unlabelled_data
-
 
     @router.post(
         "/update_prob",
@@ -33,10 +40,9 @@ class MongoAPI:
         status_code=status.HTTP_200_OK
     )
     def update_probabilities(
-        request: Request,
         updates: List[ProbabilityUpdate] = Body(...)
     ):
-        database = request.app.database["unlabelled"]
+        database = requests.app.database["unlabelled"]
 
         # Prepare the bulk update operations
         bulk_operations = []
@@ -60,26 +66,22 @@ class MongoAPI:
             "upserted_count": result.upserted_count
         }
 
-
     @router.get(
         "/labelled_get",
         response_description="Get all labelled data",
         response_model=List[LabelledJob],
         status_code=status.HTTP_200_OK
     )
-    def get_labelled_data(request: Request):
-        labelled_data = list(request.app.database["labelled"].find())
+    def get_labelled_data():
+        labelled_data = list(requests.app.database["labelled"].find())
         return labelled_data
-
 
     @app.on_event("startup")
     def startup_db_client():
         app.database = database
 
-
     @app.on_event("shutdown")
-    def shutdown_db_client():
+    def shutdown_db_client(self):
         close_connection()
-
 
     app.include_router(router)
