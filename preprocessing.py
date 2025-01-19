@@ -31,10 +31,6 @@ def remove_irrelevant_features(df):
                      "application_documents_required", "special_application_instructions", 'salary_range_$',
                      'position_start_date', 'position_end_date'], inplace=True, errors='ignore')
 
-    # print(df.columns)
-    # assert(set(df.columns) == set(['job_id', 'company', 'job_title_', 'duration', 'job_location', 'country',
-    #                            'job_description', 'cover_letter_required?', 'important_urls', 'apply']))
-
     # update duration formatting to account for range
     df['duration_min'] = df['duration'].apply(lambda x : x.split(' or')[0] + ' months' if ' or' in x else x)
     df['duration_max'] = df['duration'].apply(lambda x: x.split('or ')[1] if 'or ' in x else x)
@@ -72,7 +68,6 @@ def make_preprocessor():
         SimpleImputer(strategy="constant",
                       fill_value="https://scope.sciencecoop.ubc.ca/notLoggedIn.htm"),
         OneHotEncoder(handle_unknown="ignore",
-                      # categories=[top_categories[feat] for feat in categorical_features],
                       sparse_output=False)
     )
 
@@ -142,7 +137,7 @@ def train_model(preprocessor, X_train, y_train):
 
     feature_names = preprocessor.get_feature_names_out()
 
-    # print transformed features - sanity check
+    # print transformed features (sanity check
     df_trans = pd.DataFrame(X_train_trans, columns=feature_names)
     # print(df_trans)
 
