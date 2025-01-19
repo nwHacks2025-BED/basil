@@ -197,7 +197,19 @@ app.post('/shortlist', async (req, res) => {
         console.error('Error in /shortlist:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-    
+});
+
+app.get('/shortlist', async (req, res) => {
+    try {
+        const shortlist = await getShortlistedPostings();
+        if (!shortlist || shortlist.length === 0) {
+            return res.status(404).send("No shortlisted postings available.");
+        }
+        res.status(200).json(shortlist);
+    } catch (error) {
+        console.error('Error in /shortlist:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 app.listen(port, () => {

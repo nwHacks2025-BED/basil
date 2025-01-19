@@ -22,8 +22,20 @@ function onShortlist() {
         .catch(error => console.error('Error during shortlist:', error));
 }
 
+function getShortlist() {
+    fetch('http://localhost:3000/shortlist', {
+        mode: 'cors'
+    })
+        .then(response => response.json())
+        .then(data => {
+            updateShortlist(data);
+        })
+        .catch(() => {
+            document.getElementById('shortlist-jobs').innerHTML = '';
+        });
+}
+
 function updateShortlist(shortlist) {
-    console.log(shortlist)
     var shortlistTable = document.getElementById('shortlist-jobs');
     shortlistTable.innerHTML = '';
     shortlist.forEach(posting => {
@@ -75,7 +87,6 @@ function updateShortlist(shortlist) {
         li.appendChild(link);
         shortlistTable.appendChild(li);
     });
-
 }
 
 function getBestPosting() {
@@ -126,3 +137,4 @@ function toggleDescription() {
 
 
 document.addEventListener("DOMContentLoaded", getBestPosting());
+document.addEventListener("DOMContentLoaded", getShortlist());
