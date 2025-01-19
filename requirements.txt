@@ -1,0 +1,8 @@
+certifi==2024.12.14
+fastapi==0.115.6
+lightgbm==4.5.0
+pandas==2.2.3
+pydantic==2.10.5
+pymongo==4.10.1
+scikit_learn==1.6.1
+uvicorn==0.34.0
