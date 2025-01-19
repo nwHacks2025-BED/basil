@@ -12,23 +12,46 @@
 </head>
 <body>
 <img src="../basil.png" alt="nwHacks2025" id="logo">
-<div id="job-application-box">
-    <h2 id="job-id">Job: <span id="job-id-value">12345</span></h2>
-    <p id="company"><strong>Company:</strong> <span id="company-value">...</span></p>
-    <p id="job-title"><strong>Job title:</strong> <span id="job-title-value">...</span></p>
-    <p id="duration"><strong>Duration:</strong> <span id="duration-value">...</span></p>
-    <p id="location"><strong>Location/Country:</strong> <span id="location-value">...</span></p>
-    <p id="job-description"><strong>Job description:</strong> <span id="job-description-value">...</span></p>
-    <p id="cover-letter"><strong>Cover Letter:</strong> <span id="cover-letter-value">...</span></p>
-    <p id="application-link"><strong>Application link:</strong> <span id="application-link-value"><a href="https://example.com/apply">Apply here</a></span></p>
-    <form>
-        <button type="button" id="skipButton" onclick="onSkip()">Skip</button>
-        <button type="button" id="shortlistButton" onclick="onShortlist()">Shortlist</button>
-    </form>
+<div id="main">
+    <div id="job-application-box">
+        <h2 id="job-title"><span id="job-title-value"></span></h2>
+        <p id="company"><strong>Company:</strong> <span id="company-value">...</span></p>
+        <p id="job-id"><strong>Job title:</strong> <span id="job-id-value">...</span></p>
+        <p id="duration"><strong>Duration:</strong> <span id="duration-value">...</span></p>
+        <p id="location"><strong>Location/Country:</strong> <span id="location-value">...</span></p>
+        
+        <p id="job-description"><strong>Job description:</strong> <span id="job-description-value">...</span></p>
+        
+        <p id="cover-letter"><strong>Cover Letter:</strong> <span id="cover-letter-value">...</span></p>
+        <p id="application-link"><strong>Application link:</strong> <span id="application-link-value"><a href="https://example.com/apply">Apply here</a></span></p>
+        <form>
+            <button type="button" id="skipButton" onclick="onSkip()">Skip</button>
+            <button type="button" id="shortlistButton" onclick="onShortlist()">Shortlist</button>
+        </form>
+    </div>
+    <div id="no-jobs-box" class="hidden">
+        <h2>No more jobs available!</h2>
+    </div>
+    <div id ="shortlist">
+        <h2>Shortlisted Jobs</h2>
+        <ul id="shortlist-jobs">
+            <li><div class="shortlist-title">S25 EDC Student / New Grad Positions - Technology and Analytics Stream 165842B</div>
+                <div class="shorlist-data">Bla bla bla bla asdasd sadhjd shkajsd  kjhadksjh kjashdkj hjd jakshjdk ashkds hjkasdh jdah </div>
+            </li>
+            <li><div class="shortlist-title">S25 Digital Strategy and Operations Intern (Track 1) - 8 or 12 months 165848</div>
+                <div class="shorlist-data">Bla bla bla bla asdasd sadhjd shkajsd  kjhadksjh kjashdkj hjd jakshjdk ashkds hjkasdh jdah </div>
+            </li>
+            <li><div class="shortlist-title">S25 Biochemical Analyses and Lab Logistic Support 12 months (S. Beheshti) 165845</div>
+                <div class="shorlist-data">Bla bla bla bla asdasd sadhjd shkajsd  kjhadksjh kjashdkj hjd jakshjdk ashkds hjkasdh jdah </div>
+            </li>
+            <li><div class="shortlist-title">Job Title 1</div>
+                <div class="shorlist-data">Bla bla bla bla asdasd sadhjd shkajsd  kjhadksjh kjashdkj hjd jakshjdk ashkds hjkasdh jdah </div>
+            </li>
+        </ul>
+    </div>
 </div>
 
-<div id="no-jobs-box" class="hidden">
-    <h2>No more jobs available!</h2>
-</div>
+
+
 </body>
 </html>
