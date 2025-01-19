@@ -29,7 +29,7 @@ To run Basil locally, follow these steps:
 
 1. Clone the repository:
 ```bash
-$ git clone git@github.com:nwHacks2025-BED/nwHacks2025.git
+$ git clone git@github.com:nwHacks2025-BED/basil.git
 ```
 
 2. Create a virtual environment in root project directory and activate it:
