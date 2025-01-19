@@ -1,5 +1,10 @@
-# Description
+## Description
 Created by 3 UBC Computer Science Co-op students, **_basil_** aims to streamline the job search process, allowing you to spend less time sifting through job postings and more time applying. 
+
+## Tech Stack
+Frontend:
+
+Backend:
 
 ## Getting Started
 
