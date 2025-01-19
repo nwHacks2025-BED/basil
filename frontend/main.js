@@ -9,15 +9,6 @@ function onSkip() {
         .catch(error => console.error('Error during skip:', error));
 }
 
-function getTopPostings(limit) {
-    fetch(`http://localhost:3000/top-postings?limit=${limit}`, {
-        method: 'GET',
-        mode: 'cors'
-    }).then(response => console.log(response)).then(()=> {
-            getBestPosting();
-        })
-        .catch(error => console.error('Error during shortlist:', error));
-}
 
 
 function getBestPosting() {
@@ -42,4 +33,4 @@ function getBestPosting() {
         });
 }
 
-document.addEventListener("DOMContentLoaded", getTopPostings(10));
+document.addEventListener("DOMContentLoaded", getBestPosting());
