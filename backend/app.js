@@ -155,10 +155,10 @@ app.get('/best-posting', async (req, res) => {
                 console.error('Error:', error);
             }
         }
-        res.json(bestPosting);
+        return res.json(bestPosting);
     } catch (error) {
         console.error('Error in /best-posting:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -175,10 +175,10 @@ app.post('/skip', async (req, res) => {
 
         console.log("Current posting job_id:", currentPosting.job_id); // Debug line
         const result = await moveLabelledPosting(currentPosting.job_id, 0);
-        res.status(201).json({ message: "Posting skipped", result });
+        return res.status(201).json({ message: "Posting skipped", result });
     } catch (error) {
         console.error('Error in /skip:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
     
 });
@@ -196,14 +196,14 @@ app.post('/shortlist', async (req, res) => {
         
         try {
             const result = await moveLabelledPosting(currentPosting.job_id, 1);
-            res.status(200).json({shortlisted: currentPosting});
+            return res.status(200).json({shortlisted: currentPosting});
         } catch (error) {
             console.error('Error in /shortlist:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            return res.status(500).json({ error: 'Internal server error' });
         }
     } catch (error) {
         console.error('Error in /shortlist:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -213,10 +213,27 @@ app.get('/shortlist', async (req, res) => {
         if (!shortlist || shortlist.length === 0) {
             return res.status(404).send("No shortlisted postings available.");
         }
-        res.status(200).json(shortlist);
+        return res.status(200).json(shortlist);
     } catch (error) {
         console.error('Error in /shortlist:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.delete('/shortlist', async (req, res) => { // TODO make this properly RESTful - id in url instead of body
+    try {
+        const client = await connectDB();
+        const database = client.db('jobs');
+        const collection = database.collection('shortlist');
+        const result = await collection.deleteOne({job_id : req.body.job_id});
+        if (result.deletedCount === 0) {
+            return res.status(404).send("Posting not found in shortlist.");
+        } else {
+            return res.status(204).send("Posting removed from shortlist.");
+        }
+    } catch (error) {
+        console.error('Error in /shortlist:', error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -229,7 +246,7 @@ process.on('SIGINT', async () => {
     try {
         if (client) {
             await client.close();
-            console.log('MongoDB connection closed.');
+            console.log('MongoDB connection closed.\n');
         }
         process.exit(0);
     } catch (error) {
