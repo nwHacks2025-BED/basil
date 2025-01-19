@@ -14,7 +14,7 @@ function onShortlist() {
         method: 'POST',
         mode: 'cors'
     })
-        .then(() => {
+        .then((shortlist) => {
             getBestPosting();
             displayShortlist();
         })
@@ -28,7 +28,7 @@ function displayShortlist() {
     })
         .then(response => response.json())
         .then(data => {
-            // TODO display shortlist (make new elements)
+
         })
         .catch(error => console.error('Error during shortlist:', error));
 }
@@ -46,7 +46,18 @@ function getBestPosting() {
             document.getElementById('location-value').textContent = data.job_location;
             document.getElementById('job-description-value').textContent = data.job_description;
             document.getElementById('cover-letter-value').textContent = data['cover_letter_required?'];
+            if (data['cover_letter_required?'] != 'Yes') {
+                document.getElementById('cover-letter').classList.add('hidden');
+            }
             document.getElementById('application-link-value').href = data.application_link;
+            document.getElementById('job-description-trunc').textContent = data.job_description.substring(0, 1000) + '...';
+            if (data.job_description.length > 1000) {
+                document.getElementById('readMoreButton').classList.remove('hidden');
+                document.getElementById('job-description-value').classList.add('hidden');
+            } else {
+                document.getElementById('readMoreButton').classList.add('hidden');
+                document.getElementById('job-description-value').classList.remove('hidden');
+            }
 
         })
         .catch(() => {
@@ -54,5 +65,19 @@ function getBestPosting() {
             document.getElementById('no-jobs-box').classList.remove('hidden');
         });
 }
+
+function toggleDescription() {
+    var description = document.getElementById('job-description-value');
+    var button = document.getElementById('readMoreButton');
+    if (description.classList.contains('hidden')) {
+        description.classList.remove('hidden');
+        button.textContent = 'read less';
+    } else {
+        description.classList.add('hidden');
+        button.textContent = 'read more';
+    }
+}
+
+
 
 document.addEventListener("DOMContentLoaded", getBestPosting());
