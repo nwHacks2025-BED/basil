@@ -143,8 +143,8 @@ app.get('/best-posting', async (req, res) => {
                 return res.status(404).send("No more postings available.");
             }
             bestPosting = postingStack.pop();
-            decisionsMade++;
         }
+        decisionsMade++;
         if (decisionsMade % 15 === 0) {
             console.log('Training the model...');
             try {
