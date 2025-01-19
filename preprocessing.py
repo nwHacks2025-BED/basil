@@ -7,7 +7,6 @@ from lightgbm import LGBMClassifier
 from sklearn.compose import make_column_transformer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
@@ -15,8 +14,8 @@ from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 warnings.filterwarnings('ignore', category=FutureWarning)
 
 
-CSV_FILE_NAME = 'data.csv'
-JSON_FILE_NAME = 'OLD.json'
+JSON_TRAIN_FILE_NAME = 'OLD.json'
+JSON_TEST_FILE_NAME = 'allJobs.json'
 
 
 def load_dataframe_from_json(file_path):
@@ -25,9 +24,16 @@ def load_dataframe_from_json(file_path):
     return pd.DataFrame(data)
 
 
-def save_relevant_features_to_csv(df):
-    df = df.loc[:, ['job_id', 'company', 'job_title_', 'duration', 'job_location', 'country',
-                    'job_description', 'cover_letter_required?', 'important_urls', 'apply']]
+def remove_irrelevant_features(df):
+    df.drop(columns=["placement_term", "position_type", "work_mode", "salary_currency", "salary",
+                     "job_requirements", "citizenship_requirement", "targeted_co-op_programs",
+                     "application_deadline", "application_procedure", "address_cover_letter_to",
+                     "application_documents_required", "special_application_instructions", 'salary_range_$',
+                     'position_start_date', 'position_end_date'], inplace=True, errors='ignore')
+
+    # print(df.columns)
+    # assert(set(df.columns) == set(['job_id', 'company', 'job_title_', 'duration', 'job_location', 'country',
+    #                            'job_description', 'cover_letter_required?', 'important_urls', 'apply']))
 
     # update duration formatting to account for range
     df['duration_min'] = df['duration'].apply(lambda x : x.split(' or')[0] + ' months' if ' or' in x else x)
@@ -37,7 +43,7 @@ def save_relevant_features_to_csv(df):
     # update cover_letter_required to be binary feature
     df['cover_letter_required?'] = df['cover_letter_required?'].apply(lambda x: 1 if x == 'Yes' else 0)
 
-    df.to_csv(CSV_FILE_NAME, header=df.columns.to_list(), index=False)
+    return df
 
 
 def get_top_categories(df, categorical_features, n=10):
@@ -131,20 +137,14 @@ def make_preprocessor():
     return preprocessor
 
 
-def train_test_model(preprocessor):
-    df = pd.read_csv(CSV_FILE_NAME)
-    X = df.drop(columns=["apply"])
-    y = df["apply"]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+def train_model(preprocessor, X_train, y_train):
     X_train_trans = preprocessor.fit_transform(X_train)
-    X_test_trans = preprocessor.transform(X_test)
 
     feature_names = preprocessor.get_feature_names_out()
 
     # print transformed features - sanity check
     df_trans = pd.DataFrame(X_train_trans, columns=feature_names)
-    print(df_trans)
+    # print(df_trans)
 
     # train model
     params = {
@@ -170,23 +170,48 @@ def train_test_model(preprocessor):
     model = LGBMClassifier(**params)
     model.fit(X_train_trans, y_train)
 
-    # test model
-    model.predict(X_test_trans)
-    print(model.score(X_test_trans, y_test))
-
     return model
 
 
-def main():
-    full_df = load_dataframe_from_json(JSON_FILE_NAME)
-    save_relevant_features_to_csv(full_df)
+def model_predict(preprocessor, model, X_test):
+    # transform testing data
+    X_test_trans = preprocessor.transform(X_test)
+    predictions = model.predict_proba(X_test_trans)
 
-    # preprocess features
+    # create predictions dataframe
+    predictions_df = pd.DataFrame(predictions, columns=['prob-0', 'prob-1'])
+    predictions_df.drop(columns='prob-0', inplace=True)
+    predictions_df.rename(columns={'prob-1': 'probability'}, inplace=True)
+    predictions_df['job_id'] = X_test['job_id'].to_list()
+
+    return predictions_df
+
+
+def main():
+    # create preprocessor for features
     preprocessor = make_preprocessor()
 
-    # train and test model
-    model = train_test_model(preprocessor)
+    # load training data
+    train_df = load_dataframe_from_json(JSON_TRAIN_FILE_NAME)
+    train_df = remove_irrelevant_features(train_df)
 
+    X_train = train_df.drop(columns=["apply"])
+    y_train = train_df["apply"]
+
+    # train model
+    model = train_model(preprocessor, X_train, y_train)
+
+    # load testing data (no target values)
+    X_test = load_dataframe_from_json(JSON_TEST_FILE_NAME).head(10)
+    X_test = remove_irrelevant_features(X_test)
+
+    # predict test data
+    predictions_df = model_predict(preprocessor, model, X_test)
+
+    # return predictions as json
+    json_object = json.loads(predictions_df.to_json(orient='records'))
+    print(json.dumps(json_object, indent=1))
+    return json_object
 
 
 if __name__ == "__main__":
