@@ -141,10 +141,9 @@ app.get('/best-posting', async (req, res) => {
         if (decisionsMade % 15 === 0) {
             console.log('Training the model...');
             // TODO print something to the UI to indicate that the model is being trained
-            runPythonPreprocessing();
+            runPythonPreprocessing(); // TODO: can we do this asynchronously?
         }
-        const response = { remainingLocally: postingStack.length, ...bestPosting };
-        res.json(response);
+        res.json(bestPosting);
     } catch (error) {
         console.error('Error in /best-posting:', error);
         res.status(500).json({ error: 'Internal server error' });

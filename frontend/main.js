@@ -32,21 +32,47 @@ function updateShortlist(shortlist) {
         title.className = 'shortlist-title';
         title.textContent = posting.job_title_;
 
-        var data = null;
-        
+        var company = document.createElement('div');
+        company.className = 'shortlist-company';
+       
+        var companyHeading = document.createElement('strong');
+        companyHeading.className = 'shortlist-heading';
+        companyHeading.textContent = 'Company: ';
+        company.appendChild(companyHeading);
+
+        var companyText = document.createElement('span');
+        companyText.textContent = posting.company;
+        company.appendChild(companyText);
+
+        var location = document.createElement('div');
+        location.className = 'shortlist-location';
+
+        var locationHeading = document.createElement('strong');
+        locationHeading.className = 'shortlist-heading';
+        locationHeading.textContent = 'Location: ';
+        location.appendChild(locationHeading);
+
+        var locationText = document.createElement('span');
+        locationText.textContent = posting.job_location;
+        location.appendChild(locationText);
+
+
+        var link = document.createElement('a');
+        link.className = 'shortlist-link';
+        link.target = "_blank";
+
         if (posting.important_urls) {
-            data = document.createElement('a');
-            data.textContent = "Apply here";
-            data.href = posting.important_urls.split(',')[0];
-            data.target = '_blank';
+            link.textContent = "Apply here";
+            link.href = posting.important_urls.split(',')[0];
         } else {
-            data = document.createElement('a');
-            data.textContent = "Apply on SCOPE using ID: " + posting.job_id;
+            link.textContent = "Apply on SCOPE using ID: " + posting.job_id;
+            link.href="https://scope.sciencecoop.ubc.ca/students/cwl-current-student-login.htm";
         }
-        data.className = 'posting-data';
 
         li.appendChild(title);
-        li.appendChild(data);
+        li.appendChild(company);
+        li.appendChild(location);
+        li.appendChild(link);
         shortlistTable.appendChild(li);
     });
 
