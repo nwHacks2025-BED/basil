@@ -46,6 +46,9 @@ function setShortlist(shortlist) {
         var title = document.createElement('div');
         title.className = 'shortlist-title';
         title.textContent = posting.job_title_;
+        title.addEventListener('click', () => {
+            createPane('<h2>Dynamic Pane</h2><p>This is a dynamically created pane that covers part of the webpage!</p>');
+        });
 
         var company = document.createElement('div');
         company.className = 'shortlist-company';
@@ -201,7 +204,40 @@ function toggleDescription() {
     }
 }
 
+function createPane(content) {
+    let existingPane = document.querySelector('.pane-overlay');
+    if (existingPane) {
+        existingPane.remove();
+    }
 
+    const paneOverlay = document.createElement('div');
+    paneOverlay.className = 'pane-overlay';
+    paneOverlay
+
+    const pane = document.createElement('div');
+    pane.className = 'pane';
+
+    if (typeof content === 'string') {
+        pane.innerHTML = content;
+    } else {
+        pane.appendChild(content);
+    }
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'pane-close';
+    closeButton.textContent = '×';
+    closeButton.onclick = () => {
+        paneOverlay.style.display = 'none';
+    };
+
+    pane.appendChild(closeButton);
+
+    paneOverlay.appendChild(pane);
+
+    document.body.appendChild(paneOverlay);
+
+    paneOverlay.style.display = 'flex';
+}
 
 document.addEventListener("DOMContentLoaded", getBestPosting());
 document.addEventListener("DOMContentLoaded", getShortlist());

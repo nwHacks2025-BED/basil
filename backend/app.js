@@ -220,6 +220,12 @@ app.get('/shortlist', async (req, res) => {
     }
 });
 
+// app.get('/jobInfo', async (req, res) => {
+//     try {
+//         const job = 
+//     }
+// });
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
