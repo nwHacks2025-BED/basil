@@ -133,7 +133,7 @@ app.get('/best-posting', async (req, res) => {
             bestPosting = postingStack.pop();
             decisionsMade++;
         }
-        if (decisionsMade % 5 === 0) {
+        if (decisionsMade % 50 === 0) {
             console.log('Training the model...');
             // TODO print something to the UI to indicate that the model is being trained
             runPythonPreprocessing();
