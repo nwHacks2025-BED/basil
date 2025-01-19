@@ -2,6 +2,8 @@ const express=require('express')
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
 const { spawn } = require('child_process');
+const path = require('path');
+
 const app = express();
 app.use(cors());
 const port=3000
@@ -29,7 +31,7 @@ async function getTopPostings(limit) {
     try {
         const database = client.db('jobs');
         const collection = database.collection('unlabelled');
-        const postings = await collection.find().sort({ jobId: -1 }).limit(limit).toArray();
+        const postings = await collection.find().sort({ probability: -1 }).limit(limit).toArray();
         postingStack = postingStack.concat(postings);
         return postings;
     } catch (error) {
@@ -43,7 +45,7 @@ async function getShortlistedPostings() {
     try {
         const database = client.db('jobs');
         const collection = database.collection('labelled');
-        return await collection.find().toArray();
+        return await collection.find({apply : 1}).toArray();
     } catch (error) {
         console.error('Error in getShortlistedPostings:', error);
         throw error;
@@ -98,7 +100,7 @@ async function moveLabelledPosting(jobId, label) {
 function runPythonPreprocessing() {
     return new Promise((resolve, reject) => {
         // Assuming Python 3 is installed and in your PATH
-        const pythonProcess = spawn('python3', ['preprocessing.py']);
+        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'preprocessing.py')]);
 
         // Handle data from the Python script
         pythonProcess.stdout.on('data', (data) => {
@@ -133,7 +135,7 @@ app.get('/best-posting', async (req, res) => {
             bestPosting = postingStack.pop();
             decisionsMade++;
         }
-        if (decisionsMade % 50 === 0) {
+        if (decisionsMade % 15 === 0) {
             console.log('Training the model...');
             // TODO print something to the UI to indicate that the model is being trained
             runPythonPreprocessing();
