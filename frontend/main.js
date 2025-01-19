@@ -13,24 +13,43 @@ function onShortlist() {
     fetch('http://localhost:3000/shortlist', {
         method: 'POST',
         mode: 'cors'
-    })
-        .then((shortlist) => {
+    }).then((shortlist) => {
+            shortlist.json().then(data => {
+                updateShortlist(data);
+            });
             getBestPosting();
-            displayShortlist();
         })
         .catch(error => console.error('Error during shortlist:', error));
 }
 
-function displayShortlist() {
-    fetch('http://localhost:3000/shortlist', {
-        method: 'GET',
-        mode: 'cors'
-    })
-        .then(response => response.json())
-        .then(data => {
+function updateShortlist(shortlist) {
+    console.log(shortlist)
+    var shortlistTable = document.getElementById('shortlist-jobs');
+    shortlistTable.innerHTML = '';
+    shortlist.forEach(posting => {
+        var li = document.createElement('li');
+        var title = document.createElement('div');
+        title.className = 'shortlist-title';
+        title.textContent = posting.job_title_;
 
-        })
-        .catch(error => console.error('Error during shortlist:', error));
+        var data = null;
+        
+        if (posting.important_urls) {
+            data = document.createElement('a');
+            data.textContent = "Apply here";
+            data.href = posting.important_urls.split(',')[0];
+            data.target = '_blank';
+        } else {
+            data = document.createElement('a');
+            data.textContent = "Apply on SCOPE using ID: " + posting.job_id;
+        }
+        data.className = 'posting-data';
+
+        li.appendChild(title);
+        li.appendChild(data);
+        shortlistTable.appendChild(li);
+    });
+
 }
 
 function getBestPosting() {
