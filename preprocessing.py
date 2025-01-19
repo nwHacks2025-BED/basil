@@ -30,7 +30,8 @@ def remove_irrelevant_features(df):
                      "job_requirements", "citizenship_requirement", "targeted_co-op_programs",
                      "application_deadline", "application_procedure", "address_cover_letter_to",
                      "application_documents_required", "special_application_instructions", 'salary_range_$',
-                     'position_start_date', 'position_end_date', 'probability'], inplace=True, errors='ignore')
+                     'position_start_date', 'position_end_date', 'probability', 'company', 'job_location'],
+            inplace=True, errors='ignore')
 
     # update duration formatting to account for range
     df['duration_min'] = df['duration'].apply(lambda x : x.split(' or')[0] + ' months' if ' or' in x else x)
@@ -52,7 +53,7 @@ def get_top_categories(df, categorical_features, n=10):
 
 def make_preprocessor():
     # assign feature categories
-    categorical_features = ['company', 'job_location', 'country']
+    categorical_features = ['country'] # removed company and job_location
     short_text_feature = ['job_title_']
     text_feature = ['job_description']
     ordinal_features = ["duration_min", "duration_max"]
@@ -138,9 +139,10 @@ def train_model(preprocessor, X_train, y_train):
 
     feature_names = preprocessor.get_feature_names_out()
 
-    # print transformed features (sanity check
+    # print transformed features (sanity check)
     df_trans = pd.DataFrame(X_train_trans, columns=feature_names)
-    # print(df_trans)
+    df_trans.to_csv('transformed_features.csv', index=False)
+    print("saved transformed features to transformed_features.csv")
 
     # train model
     params = {
@@ -172,6 +174,14 @@ def train_model(preprocessor, X_train, y_train):
 def model_predict(preprocessor, model, X_test):
     # transform testing data
     X_test_trans = preprocessor.transform(X_test)
+
+    feature_names = preprocessor.get_feature_names_out()
+
+    # print transformed features (sanity check)
+    df_trans = pd.DataFrame(X_test_trans, columns=feature_names)
+    df_trans.to_csv('transformed_features_test.csv', index=False)
+    print("saved transformed features to transformed_features_test.csv")
+
     predictions = model.predict_proba(X_test_trans)
 
     # create predictions dataframe
@@ -208,7 +218,8 @@ def main():
 
     # return predictions as json
     json_object = json.loads(predictions_df.to_json(orient='records'))
-    # print(json.dumps(json_object, indent=1))
+    
+    print(json.dumps(json_object, indent=1))
     MongoAPI.update_probabilities(json_object)
 
 
