@@ -16,6 +16,7 @@ let postingStack = [];
 app.post('/skip', (req, res) => {
     if (postingStack) {
         bestPosting = postingStack.pop();
+        // remove the posting from unlabelled and add it to labelled (MONGODB)
         res.send("done!")
     } else {
         bestPosting = null;

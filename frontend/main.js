@@ -9,7 +9,29 @@ function onSkip() {
         .catch(error => console.error('Error during skip:', error));
 }
 
+function onShortlist() {
+    fetch('http://localhost:3000/shortlist', {
+        method: 'POST',
+        mode: 'cors'
+    })
+        .then(() => {
+            getBestPosting();
+            displayShortlist();
+        })
+        .catch(error => console.error('Error during shortlist:', error));
+}
 
+function displayShortlist() {
+    fetch('http://localhost:3000/shortlist', {
+        method: 'GET',
+        mode: 'cors'
+    })
+        .then(response => response.json())
+        .then(data => {
+            // TODO display shortlist (make new elements)
+        })
+        .catch(error => console.error('Error during shortlist:', error));
+}
 
 function getBestPosting() {
     fetch('http://localhost:3000/best-posting', {
