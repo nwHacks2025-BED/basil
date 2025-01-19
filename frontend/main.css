@@ -5,6 +5,8 @@ body {
     font-style: normal;
     font-variation-settings:
         "wdth" 100;
+
+
 }
 
 #logo {
@@ -66,11 +68,27 @@ ul > li {
     background-color:#edf2f4;
     align-self: flex-start;
 }
+
 #job-application-box p {
     margin: 5px 0;
 }
 .hidden {
     display: none;
+}
+
+
+
+#readMoreButton {
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    margin-top: 10px;
+    color:rgb(37, 37, 37);
+    text-decoration: underline;
+}
+
+#readMoreButton:hover {
+    cursor: pointer;
 }
 
 #no-jobs-box {
