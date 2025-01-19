@@ -1,3 +1,5 @@
+var localShortlist = [];
+
 function onSkip() {
     fetch('http://localhost:3000/skip', {
         method: 'POST',
@@ -15,7 +17,7 @@ function onShortlist() {
         mode: 'cors'
     }).then((shortlist) => {
             shortlist.json().then(data => {
-                updateShortlist(data);
+                updateShortlist(data['shortlisted']);
             });
             getBestPosting();
         })
@@ -28,14 +30,15 @@ function getShortlist() {
     })
         .then(response => response.json())
         .then(data => {
-            updateShortlist(data);
+            setShortlist(data);
         })
         .catch(() => {
             document.getElementById('shortlist-jobs').innerHTML = '';
         });
 }
 
-function updateShortlist(shortlist) {
+function setShortlist(shortlist) {
+    localShortlist = shortlist;
     var shortlistTable = document.getElementById('shortlist-jobs');
     shortlistTable.innerHTML = '';
     shortlist.forEach(posting => {
@@ -87,6 +90,62 @@ function updateShortlist(shortlist) {
         li.appendChild(link);
         shortlistTable.appendChild(li);
     });
+}
+
+function updateShortlist(job) {
+    if (!localShortlist) {
+        updateShortlist([job]);
+    } else {
+        localShortlist.push(job);
+        var shortlistTable = document.getElementById('shortlist-jobs');
+        var li = document.createElement('li');
+        var title = document.createElement('div');
+        title.className = 'shortlist-title';
+        title.textContent = job.job_title_;
+
+        var company = document.createElement('div');
+        company.className = 'shortlist-company';
+       
+        var companyHeading = document.createElement('strong');
+        companyHeading.className = 'shortlist-heading';
+        companyHeading.textContent = 'Company: ';
+        company.appendChild(companyHeading);
+
+        var companyText = document.createElement('span');
+        companyText.textContent = job.company;
+        company.appendChild(companyText);
+
+        var location = document.createElement('div');
+        location.className = 'shortlist-location';
+
+        var locationHeading = document.createElement('strong');
+        locationHeading.className = 'shortlist-heading';
+        locationHeading.textContent = 'Location: ';
+        location.appendChild(locationHeading);
+
+        var locationText = document.createElement('span');
+        locationText.textContent = job.job_location;
+        location.appendChild(locationText);
+
+
+        var link = document.createElement('a');
+        link.className = 'shortlist-link';
+        link.target = "_blank";
+
+        if (job.important_urls) {
+            link.textContent = "Apply here";
+            link.href = job.important_urls.split(',')[0];
+        } else {
+            link.textContent = "Apply on SCOPE using ID: " + job.job_id;
+            link.href="https://scope.sciencecoop.ubc.ca/students/cwl-current-student-login.htm";
+        }
+
+        li.appendChild(title);
+        li.appendChild(company);
+        li.appendChild(location);
+        li.appendChild(link);
+        shortlistTable.appendChild(li);
+    }
 }
 
 function getBestPosting() {
