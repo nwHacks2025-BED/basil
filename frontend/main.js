@@ -1,6 +1,8 @@
 var localShortlist = [];
 
 function onSkip() {
+    document.getElementById('job-application-content').classList.add('hidden');
+    showLoading();
     fetch('http://localhost:3000/skip', {
         method: 'POST',
         mode: 'cors'
@@ -11,7 +13,30 @@ function onSkip() {
         .catch(error => console.error('Error during skip:', error));
 }
 
+let loadingTimeout;
+
+function showLoadingWithDelay() {
+    loadingTimeout = setTimeout(() => {
+        document.getElementById('finding-jobs').style.display = 'block';
+    }, 1500);
+}
+
+function showLoading() {
+    document.querySelector('.loader').style.display = 'inline-block';
+    document.getElementById('loader-box').style.display = 'flex';
+    showLoadingWithDelay();
+}
+
+function hideLoading() {
+    clearTimeout(loadingTimeout);
+    document.querySelector('.loader').style.display = 'none';
+    document.getElementById('loader-box').style.display = 'none';
+    document.getElementById('finding-jobs').style.display = 'none';
+}
+
 function onShortlist() {
+    document.getElementById('job-application-content').classList.add('hidden');
+    showLoading();
     fetch('http://localhost:3000/shortlist', {
         method: 'POST',
         mode: 'cors'
@@ -73,15 +98,14 @@ function setShortlist(shortlist) {
         var locationText = document.createElement('span');
         locationText.textContent = posting.job_location;
         location.appendChild(locationText);
+        
         var removeButton = document.createElement('span');
         removeButton.className = 'shortlist-remove';
-        removeButton.textContent = 'x';
+        removeButton.textContent = '✓';
         removeButton.onclick = function() {
-            shortlistTable.removeChild(li);
-            localShortlist = localShortlist.filter(item => item.job_id !== posting.job_id);
+            removeShortlistEntry(posting, shortlistTable, li);
         };
         li.appendChild(removeButton);
-
 
         var link = document.createElement('a');
         link.className = 'shortlist-link';
@@ -102,6 +126,29 @@ function setShortlist(shortlist) {
         shortlistTable.appendChild(li);
     });
 }
+
+function removeShortlistEntry(posting, shortlistTable, li) {
+    // remove from UI display
+    shortlistTable.removeChild(li);
+
+    const indexToDelete = localShortlist.findIndex(item => item.job_id === posting.job_id);
+    if (indexToDelete === -1) {
+        console.error('Error: Shortlist item not found');
+    } else {
+        // update local shortlist array
+        localShortlist.splice(indexToDelete, 1);
+    }
+
+    // console.log('job_id: ', posting.job_id);
+    fetch('http://localhost:3000/shortlist/' + posting.job_id, {
+        method: 'DELETE',
+        mode: 'cors',
+    }).then((response) => {
+        if (response.status !== 204) {
+            console.error('Error during shortlist delete:', response);
+        }
+    }).catch(error => console.error('Error during shortlist:', error));
+};
 
 function updateShortlist(job) {
     if (!localShortlist) {
@@ -138,6 +185,15 @@ function updateShortlist(job) {
         locationText.textContent = job.job_location;
         location.appendChild(locationText);
 
+        var removeButton = document.createElement('span');
+        removeButton.className = 'shortlist-remove';
+        removeButton.textContent = '✓';
+        removeButton.onclick = function() {
+            shortlistTable.removeChild(li);
+            localShortlist = localShortlist.filter(item => item.job_id !== posting.job_id);
+        };
+        li.appendChild(removeButton);
+
 
         var link = document.createElement('a');
         link.className = 'shortlist-link';
@@ -165,6 +221,9 @@ function getBestPosting() {
     })
         .then(response => response.json())
         .then(data => {
+            document.getElementById('job-application-content').classList.remove('hidden');
+            hideLoading();
+
             document.getElementById('job-id-value').textContent = data.job_id;
             document.getElementById('company-value').textContent = data.company;
             document.getElementById('job-title-value').textContent = data.job_title_;
