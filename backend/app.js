@@ -1,13 +1,14 @@
 const express=require('express')
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const { spawn } = require('child_process');
 const app = express();
 app.use(cors());
 const port=3000
 
 let bestPosting = null;
-let shortlist = [];
 
+let decisionsMade = 0;
 let postingStack = [];
 
 const uri = "mongodb+srv://davenfroberg:WjxywruYe42mXrVe@nwhacks.dtnoj.mongodb.net/?retryWrites=true&w=majority&appName=nwhacks"
@@ -94,6 +95,32 @@ async function moveLabelledPosting(jobId, label) {
     }
 }
 
+function runPythonPreprocessing() {
+    return new Promise((resolve, reject) => {
+        // Assuming Python 3 is installed and in your PATH
+        const pythonProcess = spawn('python3', ['preprocessing.py']);
+
+        // Handle data from the Python script
+        pythonProcess.stdout.on('data', (data) => {
+            console.log('Python output:', data.toString());
+        });
+
+        // Handle errors
+        pythonProcess.stderr.on('data', (data) => {
+            console.error('Python error:', data.toString());
+        });
+
+        // Handle process completion
+        pythonProcess.on('close', (code) => {
+            if (code !== 0) {
+                reject(`Python process exited with code ${code}`);
+            } else {
+                resolve('Python script completed successfully');
+            }
+        });
+    });
+}
+
 app.get('/best-posting', async (req, res) => {
     try {
         if (!bestPosting) {
@@ -104,6 +131,12 @@ app.get('/best-posting', async (req, res) => {
                 return res.status(404).send("No more postings available.");
             }
             bestPosting = postingStack.pop();
+            decisionsMade++;
+        }
+        if (decisionsMade % 50 === 0) {
+            console.log('Training the model...');
+            // TODO print something to the UI to indicate that the model is being trained
+            runPythonPreprocessing();
         }
         const response = { remainingLocally: postingStack.length, ...bestPosting };
         res.json(response);
@@ -122,6 +155,7 @@ app.post('/skip', async (req, res) => {
 
         const currentPosting = bestPosting;
         bestPosting = postingStack.pop();
+        decisionsMade++;
 
         console.log("Current posting job_id:", currentPosting.job_id); // Debug line
         const result = await moveLabelledPosting(currentPosting.job_id, 0);
@@ -142,6 +176,7 @@ app.post('/shortlist', async (req, res) => {
 
         const currentPosting = bestPosting;
         bestPosting = postingStack.pop();
+        decisionsMade++;
         
         const result = await moveLabelledPosting(currentPosting.job_id, 1);
         try {

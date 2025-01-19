@@ -9,19 +9,20 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from pymongo_fastapi_crud.routes import MongoAPI
 
 # Repress error from deprecation for sklearn
 warnings.filterwarnings('ignore', category=FutureWarning)
 
 
-JSON_TRAIN_FILE_NAME = 'OLD.json'
-JSON_TEST_FILE_NAME = 'allJobs.json'
+# JSON_TRAIN_FILE_NAME = 'OLD.json'
+# JSON_TEST_FILE_NAME = 'allJobs.json'
 
 
-def load_dataframe_from_json(file_path):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    return pd.DataFrame(data)
+# def load_dataframe_from_json(file_path):
+#     with open(file_path, 'r') as f:
+#         data = json.load(f)
+#     return pd.DataFrame(data)
 
 
 def remove_irrelevant_features(df):
@@ -187,7 +188,8 @@ def main():
     preprocessor = make_preprocessor()
 
     # load training data
-    train_df = load_dataframe_from_json(JSON_TRAIN_FILE_NAME)
+    # train_df = load_dataframe_from_json(JSON_TRAIN_FILE_NAME)
+    train_df = pd.DataFrame(MongoAPI.get_labelled_data())
     train_df = remove_irrelevant_features(train_df)
 
     X_train = train_df.drop(columns=["apply"])
@@ -197,7 +199,8 @@ def main():
     model = train_model(preprocessor, X_train, y_train)
 
     # load testing data (no target values)
-    X_test = load_dataframe_from_json(JSON_TEST_FILE_NAME).head(10)
+    # X_test = load_dataframe_from_json(JSON_TEST_FILE_NAME).head(10)
+    X_test = pd.DataFrame(MongoAPI.get_unlabelled_data())
     X_test = remove_irrelevant_features(X_test)
 
     # predict test data
@@ -205,8 +208,8 @@ def main():
 
     # return predictions as json
     json_object = json.loads(predictions_df.to_json(orient='records'))
-    print(json.dumps(json_object, indent=1))
-    return json_object
+    # print(json.dumps(json_object, indent=1))
+    MongoAPI.update_probabilities(json_object)
 
 
 if __name__ == "__main__":
