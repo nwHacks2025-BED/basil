@@ -1,15 +1,21 @@
 import json
 import pandas as pd
+import warnings
 from sklearn.base import BaseEstimator, TransformerMixin
 from lightgbm import LGBMClassifier
 
 from sklearn.compose import make_column_transformer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, FunctionTransformer
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
-CSV_FILE_NAME = "data.csv"
+# Repress error from deprecation for sklearn
+warnings.filterwarnings('ignore', category=FutureWarning)
+
+
+CSV_FILE_NAME = 'data.csv'
 JSON_FILE_NAME = 'OLD.json'
 
 
@@ -21,7 +27,7 @@ def load_dataframe_from_json(file_path):
 
 def save_relevant_features_to_csv(df):
     df = df.loc[:, ['job_id', 'company', 'job_title_', 'duration', 'job_location', 'country',
-                    'job_description', 'cover_letter_required?', 'important_urls']]
+                    'job_description', 'cover_letter_required?', 'important_urls', 'apply']]
 
     # update duration formatting to account for range
     df['duration_min'] = df['duration'].apply(lambda x : x.split(' or')[0] + ' months' if ' or' in x else x)
@@ -41,9 +47,7 @@ def get_top_categories(df, categorical_features, n=10):
     return top_categories
 
 
-def preprocess_from_csv():
-    df = pd.read_csv(CSV_FILE_NAME)
-
+def make_preprocessor():
     # assign feature categories
     categorical_features = ['company', 'job_location', 'country']
     short_text_feature = ['job_title_']
@@ -54,7 +58,6 @@ def preprocess_from_csv():
 
     # assign ordinal levels
     duration_levels = ["4 months", "8 months", "12 months", "16 months"]
-    top_categories = get_top_categories(df, categorical_features)
 
     ordinal_transformer = OrdinalEncoder(categories=[duration_levels, duration_levels],
                                          dtype=int)
@@ -63,8 +66,8 @@ def preprocess_from_csv():
         SimpleImputer(strategy="constant",
                       fill_value="https://scope.sciencecoop.ubc.ca/notLoggedIn.htm"),
         OneHotEncoder(handle_unknown="ignore",
-                      categories=[top_categories[feat] for feat in categorical_features],
-                      sparse_output=False),
+                      # categories=[top_categories[feat] for feat in categorical_features],
+                      sparse_output=False)
     )
 
     class Count_Vectorizer(BaseEstimator, TransformerMixin):
@@ -125,18 +128,52 @@ def preprocess_from_csv():
         ("drop", drop_features),
     )
 
-    return preprocessor, df
+    return preprocessor
 
 
-def train_model(preprocessor, df):
-    df_trans = preprocessor.fit_transform(df)
+def train_test_model(preprocessor):
+    df = pd.read_csv(CSV_FILE_NAME)
+    X = df.drop(columns=["apply"])
+    y = df["apply"]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train_trans = preprocessor.fit_transform(X_train)
+    X_test_trans = preprocessor.transform(X_test)
+
     feature_names = preprocessor.get_feature_names_out()
-    # TODO - feature names are using pipelines (but functional)
-    X = pd.DataFrame(df_trans, columns=feature_names)
+
+    # print transformed features - sanity check
+    df_trans = pd.DataFrame(X_train_trans, columns=feature_names)
+    print(df_trans)
 
     # train model
-    model = LGBMClassifier()
-    model.fit(X)
+    params = {
+        'objective': 'binary',
+        'boosting_type': 'gbdt',
+        'learning_rate': 0.05,
+
+        # Handle imbalance
+        'is_unbalance': True,  # or use scale_pos_weight
+
+        # Prevent overfitting
+        'max_depth': 5,  # limit tree depth
+        'num_leaves': 20,  # reduce from default 31
+        'min_data_in_leaf': 50,  # increase from default
+        'feature_fraction': 0.8,  # use 80% of features in each iteration
+
+        # Other parameters
+        'metric': 'binary_logloss',
+        'verbose': -1,
+        'n_estimators': 100
+    }
+
+    model = LGBMClassifier(**params)
+    model.fit(X_train_trans, y_train)
+
+    # test model
+    model.predict(X_test_trans)
+    print(model.score(X_test_trans, y_test))
+
     return model
 
 
@@ -145,10 +182,11 @@ def main():
     save_relevant_features_to_csv(full_df)
 
     # preprocess features
-    preprocessor, df = preprocess_from_csv()
+    preprocessor = make_preprocessor()
 
-    # train model
-    train_model(preprocessor, df)
+    # train and test model
+    model = train_test_model(preprocessor)
+
 
 
 if __name__ == "__main__":
