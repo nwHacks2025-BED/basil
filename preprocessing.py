@@ -29,7 +29,7 @@ def remove_irrelevant_features(df):
                      "job_requirements", "citizenship_requirement", "targeted_co-op_programs",
                      "application_deadline", "application_procedure", "address_cover_letter_to",
                      "application_documents_required", "special_application_instructions", 'salary_range_$',
-                     'position_start_date', 'position_end_date'], inplace=True, errors='ignore')
+                     'position_start_date', 'position_end_date', 'probability'], inplace=True, errors='ignore')
 
     # update duration formatting to account for range
     df['duration_min'] = df['duration'].apply(lambda x : x.split(' or')[0] + ' months' if ' or' in x else x)
