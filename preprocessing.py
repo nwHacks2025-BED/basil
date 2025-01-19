@@ -141,8 +141,8 @@ def train_model(preprocessor, X_train, y_train):
 
     # print transformed features (sanity check)
     df_trans = pd.DataFrame(X_train_trans, columns=feature_names)
-    df_trans.to_csv('transformed_features.csv', index=False)
-    print("saved transformed features to transformed_features.csv")
+    # df_trans.to_csv('transformed_features.csv', index=False)
+    # print("saved transformed features to transformed_features.csv")
 
     # train model
     params = {
@@ -179,8 +179,8 @@ def model_predict(preprocessor, model, X_test):
 
     # print transformed features (sanity check)
     df_trans = pd.DataFrame(X_test_trans, columns=feature_names)
-    df_trans.to_csv('transformed_features_test.csv', index=False)
-    print("saved transformed features to transformed_features_test.csv")
+    # df_trans.to_csv('transformed_features_test.csv', index=False)
+    # print("saved transformed features to transformed_features_test.csv")
 
     predictions = model.predict_proba(X_test_trans)
 
@@ -219,7 +219,7 @@ def main():
     # return predictions as json
     json_object = json.loads(predictions_df.to_json(orient='records'))
     
-    print(json.dumps(json_object, indent=1))
+    # print(json.dumps(json_object, indent=1))
     MongoAPI.update_probabilities(json_object)
 
 
