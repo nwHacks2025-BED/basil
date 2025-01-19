@@ -99,7 +99,9 @@ function setShortlist(shortlist) {
         var removeButton = document.createElement('span');
         removeButton.className = 'shortlist-remove';
         removeButton.textContent = '✓';
-        removeButton.onclick = removeShortlistEntry(posting, shortlistTable);
+        removeButton.onclick = function() {
+            removeShortlistEntry(posting, shortlistTable);
+        };
         li.appendChild(removeButton);
 
         var link = document.createElement('a');
