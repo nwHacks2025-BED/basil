@@ -120,6 +120,9 @@ function runPythonPreprocessing() {
                 resolve('Python script completed successfully');
             }
         });
+    }).catch((err) => {
+        console.error('Error in runPythonPreprocessing:', err);
+        reject(`Python process exited with error ${err}`);
     });
 }
 
