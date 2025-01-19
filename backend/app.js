@@ -147,7 +147,6 @@ app.get('/best-posting', async (req, res) => {
         }
         if (decisionsMade % 15 === 0) {
             console.log('Training the model...');
-            // TODO print something to the UI to indicate that the model is being trained
             try {
                 await runPythonPreprocessing();
                 console.log('Success! Model trained.');
@@ -220,12 +219,13 @@ app.get('/shortlist', async (req, res) => {
     }
 });
 
-app.delete('/shortlist', async (req, res) => { // TODO make this properly RESTful - id in url instead of body
+app.delete('/shortlist/:job_id', async (req, res) => { // TODO make this properly RESTful - id in url instead of body
     try {
         const client = await connectDB();
         const database = client.db('jobs');
         const collection = database.collection('shortlist');
-        const result = await collection.deleteOne({job_id : req.body.job_id});
+        // console.log("delete job_id: ", req.params);
+        const result = await collection.deleteOne({job_id : req.params.job_id});
         if (result.deletedCount === 0) {
             return res.status(404).send("Posting not found in shortlist.");
         } else {

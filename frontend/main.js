@@ -100,7 +100,7 @@ function setShortlist(shortlist) {
         removeButton.className = 'shortlist-remove';
         removeButton.textContent = '✓';
         removeButton.onclick = function() {
-            removeShortlistEntry(posting, shortlistTable);
+            removeShortlistEntry(posting, shortlistTable, li);
         };
         li.appendChild(removeButton);
 
@@ -124,23 +124,22 @@ function setShortlist(shortlist) {
     });
 }
 
-function removeShortlistEntry(posting, shortlistTable) {
+function removeShortlistEntry(posting, shortlistTable, li) {
     // remove from UI display
     shortlistTable.removeChild(li);
 
-    itemToDelete = localShortlist.filter(item => item.job_id === posting.job_id);
-    if (itemToDelete.length() !== 1) {
+    const indexToDelete = localShortlist.findIndex(item => item.job_id === posting.job_id);
+    if (indexToDelete === -1) {
         console.error('Error: Shortlist item not found');
     } else {
         // update local shortlist array
-        indexToDelete = localShortlist.indexOf(itemToDelete);
         localShortlist.splice(indexToDelete, 1);
     }
 
-    fetch('http://localhost:3000/shortlist', {
+    // console.log('job_id: ', posting.job_id);
+    fetch('http://localhost:3000/shortlist/' + posting.job_id, {
         method: 'DELETE',
         mode: 'cors',
-        body: JSON.stringify({ job_id: posting.job_id }),
     }).then((response) => {
         if (response.status !== 204) {
             console.error('Error during shortlist delete:', response);
