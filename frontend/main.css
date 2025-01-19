@@ -46,6 +46,15 @@ ul {
     font-weight: bold;
 }
 
+.shortlist-remove {
+    cursor:pointer;
+    float: right;
+    margin-top: -13px;
+    margin-right:-5px;
+    font-size:25px;;
+    font-weight:400;
+}
+
 
 .shortlist-company {
     margin-bottom:3px;
@@ -66,8 +75,8 @@ ul > li {
     border-radius: 10px;
     color:black;
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.3);
-    background-color:#82a69f;
-    color:black;
+    background-color: #e658ab;
+    background-image: linear-gradient(316deg, #e75bad 0%, #fb7c7e 74%);
     
 }
 
@@ -78,7 +87,7 @@ ul > li {
     margin-right:25px;
     border-radius: 10px;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
-    background-color:#edf2f4
+    background-color:rgb(237, 244, 237);
 }
 
 #job-application-box {
@@ -88,7 +97,7 @@ ul > li {
     margin-left:25px;
     border-radius: 10px;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
-    background-color:#edf2f4;
+    background-color:hsl(120, 24%, 94%);
     align-self: flex-start;
 }
 
@@ -153,7 +162,7 @@ button {
 }
 
 #shortlistButton:hover {
-    background-color:rgb(76,176,116);
+    background-color:#4cb074;
     
 }
 

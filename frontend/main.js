@@ -70,6 +70,14 @@ function setShortlist(shortlist) {
         var locationText = document.createElement('span');
         locationText.textContent = posting.job_location;
         location.appendChild(locationText);
+        var removeButton = document.createElement('span');
+        removeButton.className = 'shortlist-remove';
+        removeButton.textContent = 'x';
+        removeButton.onclick = function() {
+            shortlistTable.removeChild(li);
+            localShortlist = localShortlist.filter(item => item.job_id !== posting.job_id);
+        };
+        li.appendChild(removeButton);
 
 
         var link = document.createElement('a');
