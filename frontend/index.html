@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>nwHacks2025</title>
+    <link href="main.css" type="text/css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <script src="main.js"></script>
+</head>
+<body>
+<div id="job-application-box">
+    <h2 id="job-id">Job: <span id="job-id-value">12345</span></h2>
+    <p id="company"><strong>Company:</strong> <span id="company-value">...</span></p>
+    <p id="job-title"><strong>Job title:</strong> <span id="job-title-value">...</span></p>
+    <p id="duration"><strong>Duration:</strong> <span id="duration-value">...</span></p>
+    <p id="location"><strong>Location/Country:</strong> <span id="location-value">...</span></p>
+    <p id="job-description"><strong>Job description:</strong> <span id="job-description-value">...</span></p>
+    <p id="cover-letter"><strong>Cover Letter:</strong> <span id="cover-letter-value">...</span></p>
+    <p id="application-link"><strong>Application link:</strong> <span id="application-link-value"><a href="https://example.com/apply">Apply here</a></span></p>
+    <form>
+        <button type="button" id="skipButton" onclick="onSkip()">Skip</button>
+        <button type="button" id="shortlistButton" onclick="onShortlist()">Shortlist</button>
+    </form>
+</div>
+
+<div id="no-jobs-box" class="hidden">
+    <h2>No more jobs available!</h2>
+</div>
+</body>
+</html>

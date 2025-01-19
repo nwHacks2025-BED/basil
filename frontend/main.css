@@ -1,0 +1,85 @@
+body {
+    font-family: "Roboto", serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+}
+
+#job-id {
+    margin-top:0px;
+}
+#job-application-box {
+    border: 1px solid #000;
+    padding: 20px;
+    width: 300px;
+    margin: 20px auto;
+}
+#job-application-box h2 {
+    text-align: center;
+}
+#job-application-box p {
+    margin: 5px 0;
+}
+.hidden {
+    display: none;
+}
+
+#no-jobs-box {
+    border: 2px dashed #ccc;
+    padding: 30px;
+    width: 350px;
+    margin: 40px auto;
+    text-align: center;
+    color: #666;
+    background-color: #f9f9f9;
+}
+
+.no-jobs-box h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.no-jobs-box p {
+    font-size: 1em;
+    margin: 10px 0;
+}
+
+
+
+button {
+    width:50%;
+    height:70px;
+    border-radius: 10px;
+    border:none;
+    font-size:100%;
+    font-weight:bold;
+    color:rgb(255, 255, 255);
+}
+
+#shortlistButton:hover {
+    background-color:rgb(99, 165, 99);
+}
+
+#shortlistButton {
+    background-color:rgb(73, 150, 73);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+#skipButton:hover {
+    background-color:rgb(231, 168, 168);
+}
+
+#skipButton {
+    background-color:rgb(202, 108, 108);
+}
+
+form {
+    display: flex; 
+    gap: 10px;
+    padding-top:30px;
+}
