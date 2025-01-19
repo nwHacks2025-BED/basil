@@ -137,4 +137,10 @@ dist
 
 # ignoring pymongo env
 pymongo_fastapi_crud/.env
-env-pymongo-fastapi-crud/*
+env-pymongo-fastapi-crud
+.venv
+
+**/__pycache__
+.idea
+
+make_prob_json.py
