@@ -137,3 +137,4 @@ dist
 
 # ignoring pymongo env
 pymongo_fastapi_crud/.env
+env-pymongo-fastapi-crud/*
