@@ -44,8 +44,8 @@ async function getShortlistedPostings() {
     const client = await connectDB();
     try {
         const database = client.db('jobs');
-        const collection = database.collection('labelled');
-        return await collection.find({apply : 1}).toArray();
+        const collection = database.collection('shortlist');
+        return await collection.find().toArray();
     } catch (error) {
         console.error('Error in getShortlistedPostings:', error);
         throw error;
@@ -87,6 +87,13 @@ async function moveLabelledPosting(jobId, label) {
                 throw new Error('Failed to insert document into labelled collection');
             }
 
+            if (label) {
+                const insertResult = await database.collection('shortlist').insertOne(enrichedDoc, { session });
+                if (!insertResult.acknowledged) {
+                    throw new Error('Failed to insert document into shortlist collection');
+                }
+            }
+
             return enrichedDoc;
         });
     } catch (error) {
@@ -97,7 +104,7 @@ async function moveLabelledPosting(jobId, label) {
     }
 }
 
-function runPythonPreprocessing() {
+async function runPythonPreprocessing() {
     return new Promise((resolve, reject) => {
         // Assuming Python 3 is installed and in your PATH
         const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'preprocessing.py')]);
@@ -141,7 +148,12 @@ app.get('/best-posting', async (req, res) => {
         if (decisionsMade % 15 === 0) {
             console.log('Training the model...');
             // TODO print something to the UI to indicate that the model is being trained
-            runPythonPreprocessing(); // TODO: can we do this asynchronously?
+            try {
+                await runPythonPreprocessing();
+                console.log('Success! Model trained.');
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
         res.json(bestPosting);
     } catch (error) {
@@ -182,14 +194,9 @@ app.post('/shortlist', async (req, res) => {
         bestPosting = postingStack.pop();
         decisionsMade++;
         
-        const result = await moveLabelledPosting(currentPosting.job_id, 1);
         try {
-            const shortlist = await getShortlistedPostings();
-            if (!shortlist || shortlist.length === 0) {
-                return res.status(404).send("No shortlisted postings available.");
-            }
-            res.status(200).json({shortlisted: currentPosting,
-                                    shortlist: shortlist});
+            const result = await moveLabelledPosting(currentPosting.job_id, 1);
+            res.status(200).json({shortlisted: currentPosting});
         } catch (error) {
             console.error('Error in /shortlist:', error);
             res.status(500).json({ error: 'Internal server error' });
