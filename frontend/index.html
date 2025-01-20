@@ -18,17 +18,17 @@
             <div id="finding-jobs">... personalizing your job recommendation model</div>
             <div class="loader hidden"></div>
         </div>
-        <div id="job-application-content">
+        <div id="job-application-content" class = "hidden">
             <h2 id="job-title"><span id="job-title-value"></span></h2>
             <p id="company"><strong>Company:</strong> <span id="company-value">...</span></p>
-            <p id="job-id"><strong>Job title:</strong> <span id="job-id-value">...</span></p>
+            <p id="job-id"><strong>Job ID:</strong> <span id="job-id-value">...</span></p>
             <p id="duration"><strong>Duration:</strong> <span id="duration-value">...</span></p>
             <p id="location"><strong>Location/Country:</strong> <span id="location-value">...</span></p>
             
             <p id="job-description"><strong>Job description:</strong> <span id="job-description-trunc"></span> <span id="job-description-value"></span> <span id="readMoreButton" onclick="toggleDescription()">read more</span></p>
 
             <p id="cover-letter"><strong>Cover Letter:</strong> <span id="cover-letter-value">...</span></p>
-            <p id="application-link"><strong>Application link:</strong> <span id="application-link-value"><a href="https://example.com/apply">Apply here</a></span></p>
+            <p id="application-link"><strong>Application link:</strong> <a id="application-link-value" href="www.example.com">Apply here</a></p>
             <form>
                 <button type="button" id="skipButton" onclick="onSkip()">Skip</button>
                 <button type="button" id="shortlistButton" onclick="onShortlist()">Shortlist</button>

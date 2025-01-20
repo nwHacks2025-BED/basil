@@ -70,9 +70,10 @@ function setShortlist(shortlist) {
         var li = document.createElement('li');
         var title = document.createElement('div');
         title.className = 'shortlist-title';
-        title.textContent = posting.job_title_;
+        title.textContent = posting.job_title_.replace(/^S25\s*/, '').split(` ${posting.job_id}`)[0];
+
         title.addEventListener('click', () => {
-            createPane('<h2>Dynamic Pane</h2><p>This is a dynamically created pane that covers part of the webpage!</p>');
+            createPane(posting);
         });
 
         var company = document.createElement('div');
@@ -159,7 +160,7 @@ function updateShortlist(job) {
         var li = document.createElement('li');
         var title = document.createElement('div');
         title.className = 'shortlist-title';
-        title.textContent = job.job_title_;
+        title.textContent = job.job_title_.replace(/^S25\s*/, '').split(` ${job.job_id}`)[0];
 
         var company = document.createElement('div');
         company.className = 'shortlist-company';
@@ -226,7 +227,7 @@ function getBestPosting() {
 
             document.getElementById('job-id-value').textContent = data.job_id;
             document.getElementById('company-value').textContent = data.company;
-            document.getElementById('job-title-value').textContent = data.job_title_;
+            document.getElementById('job-title-value').textContent = data.job_title_.replace(/^S25\s*/, '').split(` ${data.job_id}`)[0];
             document.getElementById('duration-value').textContent = data.duration;
             document.getElementById('location-value').textContent = data.job_location;
             document.getElementById('job-description-value').textContent = data.job_description;
@@ -234,7 +235,8 @@ function getBestPosting() {
             if (data['cover_letter_required?'] != 'Yes') {
                 document.getElementById('cover-letter').classList.add('hidden');
             }
-            document.getElementById('application-link-value').href = data.application_link;
+            document.getElementById('application-link-value').href = data.important_urls.split(',')[0];
+            document.getElementById('application-link-value').target = '_blank';
             document.getElementById('job-description-trunc').textContent = data.job_description.substring(0, 1000) + '...';
             if (data.job_description.length > 1000) {
                 document.getElementById('readMoreButton').classList.remove('hidden');
@@ -263,7 +265,7 @@ function toggleDescription() {
     }
 }
 
-function createPane(content) {
+function createPane(posting) {
     let existingPane = document.querySelector('.pane-overlay');
     if (existingPane) {
         existingPane.remove();
@@ -271,20 +273,44 @@ function createPane(content) {
 
     const paneOverlay = document.createElement('div');
     paneOverlay.className = 'pane-overlay';
-    paneOverlay
 
     const pane = document.createElement('div');
     pane.className = 'pane';
 
-    if (typeof content === 'string') {
-        pane.innerHTML = content;
-    } else {
-        pane.appendChild(content);
-    }
+    const title = document.createElement('h2');
+    title.className = 'pane-row';
+    title.textContent = posting.job_title_.replace(/^S25\s*/, '').split(` ${posting.job_id}`)[0];
+    pane.appendChild(title);
+
+    const company = document.createElement('p');
+    company.className = 'pane-row';
+    company.innerHTML = '<strong>Company: </strong>' + posting.company;
+    pane.appendChild(company);
+
+    const location = document.createElement('p');
+    location.className = 'pane-row';
+    location.innerHTML = '<strong>Location: </strong>' + posting.job_location;
+    pane.appendChild(location);
+
+    const job_id = document.createElement('p');
+    job_id.className = 'pane-row';
+    job_id.innerHTML = '<strong>Job ID: </strong>' + posting.job_id;
+    pane.appendChild(job_id);
+
+    const duration = document.createElement('p');
+    duration.className = 'pane-row';
+    duration.innerHTML = '<strong>Duration: </strong>' + posting.duration;
+    pane.appendChild(duration);
+
+    const description = document.createElement('p');
+    description.className = 'pane-row';
+    description.innerHTML = '<strong>Description: </strong>' + posting.job_description;
+    pane.appendChild(description);
+
 
     const closeButton = document.createElement('button');
     closeButton.className = 'pane-close';
-    closeButton.textContent = '×';
+    closeButton.textContent = 'X';
     closeButton.onclick = () => {
         paneOverlay.style.display = 'none';
     };
