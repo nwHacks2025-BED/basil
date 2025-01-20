@@ -2,7 +2,11 @@ import pymongo
 import json
 from pymongo import MongoClient, InsertOne
 
-client = pymongo.MongoClient("mongodb+srv://davenfroberg:WjxywruYe42mXrVe@nwhacks.dtnoj.mongodb.net/?retryWrites=true&w=majority&appName=nwhacks")
+with open('../config.json') as config_file:
+    config = json.load(config_file)
+    uri = config["connectionString"]
+
+client = pymongo.MongoClient(uri)
 db = client.jobs
 collection = db.labelled
 

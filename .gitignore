@@ -146,3 +146,5 @@ env-pymongo-fastapi-crud
 make_prob_json.py
 
 .DS_Store
+
+config.json

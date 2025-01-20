@@ -3,6 +3,7 @@ const cors = require('cors');
 const { MongoClient } = require('mongodb');
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -13,8 +14,10 @@ let bestPosting = null;
 let decisionsMade = 0;
 let postingStack = [];
 
-const uri = "mongodb+srv://davenfroberg:WjxywruYe42mXrVe@nwhacks.dtnoj.mongodb.net/?retryWrites=true&w=majority&appName=nwhacks"
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const configPath = path.join(__dirname, '..', 'config.json');
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const uri = config.connectionString;
+let client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 // Initialize MongoDB connection - idea from chatGPT

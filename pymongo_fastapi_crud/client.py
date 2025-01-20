@@ -1,9 +1,12 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import certifi
+import json
 ca = certifi.where()
 
-uri = "mongodb+srv://davenfroberg:WjxywruYe42mXrVe@nwhacks.dtnoj.mongodb.net/?retryWrites=true&w=majority&appName=nwhacks"
+with open('../config.json') as config_file:
+    config = json.load(config_file)
+    uri = config["connectionString"]
 
 # Create a new client and connect to the server
 MongoClient()
