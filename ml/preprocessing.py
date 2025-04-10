@@ -9,7 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from pymongo_fastapi_crud.routes import MongoAPI
+from api.routes import MongoAPI
 
 # Repress error from deprecation for sklearn
 warnings.filterwarnings('ignore', category=FutureWarning)

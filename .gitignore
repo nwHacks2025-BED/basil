@@ -135,10 +135,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# ignoring pymongo env
-pymongo_fastapi_crud/.env
-env-pymongo-fastapi-crud
-.venv
+**/venv
 
 **/__pycache__
 .idea

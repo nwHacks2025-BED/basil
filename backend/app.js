@@ -17,13 +17,11 @@ let postingStack = [];
 const configPath = path.join(__dirname, '..', 'config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 const uri = config.connectionString;
-let client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+let client = new MongoClient(uri);
 
-
-// Initialize MongoDB connection - idea from chatGPT
 async function connectDB() {
     if (!client) {
-        client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        client = new MongoClient(uri);
         await client.connect();
     }
     return client;
@@ -109,20 +107,18 @@ async function moveLabelledPosting(jobId, label) {
 
 async function runPythonPreprocessing() {
     return new Promise((resolve, reject) => {
-        // Assuming Python 3 is installed and in your PATH
-        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'preprocessing.py')]);
+        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'ml', 'preprocessing.py')]); // TODO: change this not to call python code direct
+        // i think we could make this run on a server somehow, maybe once we have a server we could spin up a docker container to run the model
+        // then we don't have to wait for the model to train before showing the next job, it just runs in the background and the user has no idea
 
-        // Handle data from the Python script
         pythonProcess.stdout.on('data', (data) => {
             console.log('Python output:', data.toString());
         });
 
-        // Handle errors
         pythonProcess.stderr.on('data', (data) => {
             console.error('Python error:', data.toString());
         });
 
-        // Handle process completion
         pythonProcess.on('close', (code) => {
             if (code !== 0) {
                 reject(`Python process exited with code ${code}`);

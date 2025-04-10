@@ -39,6 +39,14 @@ ul {
     padding: 0;
 }
 
+#job-title {
+    margin-top:15px;
+    margin-bottom:10px;
+}
+
+#shortlist-section-title {
+    margin-top:15px;
+}
 
 .shortlist-title {
     font-size: 18px;
@@ -139,8 +147,36 @@ ul {
       transform: rotate(-360deg);
     }
   }
-      
 
+  #sorting {
+    margin-left:30px;
+  }
+
+  #sorting input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #9c3d74;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#sorting input[type="radio"]:checked {
+    background-color: #9c3d74;
+}
+
+#sorting h2 {
+    margin-bottom:5px;
+    font-weight:300;
+    font-size:18px;
+    margin-left:4px;
+}
+      
+#sort-form {
+    padding:0;
+}
 
 .pane-overlay {
     position: fixed;
@@ -256,22 +292,24 @@ ul > li {
     color:black;
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.3);
     background-color: #dc57a4;
-    background-image: linear-gradient(316deg, #dc57a4 0%, #ee678b 74%);
+    background-image: linear-gradient(316deg, #ff67e8 0%, #ff6890 74%);
     
 }
 
 #shortlist {
     border: 1px solid #000;
-    padding: 10px 20px;
+    padding: 0px 20px;
     width:33%;
     margin-right:25px;
     border-radius: 10px;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
     background-color:rgb(237, 244, 237);
-    height: calc(100vh - 200px);
+    height: 65vh;
     overflow-y:auto;
     
 }
+
+
 
 #job-application-box {
     border: 1px solid #000;
@@ -282,7 +320,31 @@ ul > li {
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
     background-color:hsl(120, 24%, 94%);
     align-self: flex-start;
-    height: calc(100vh - 200px);
+    height: 63vh;
+    display:flex;
+    flex-direction:column;
+}
+
+
+button {
+    width: 100%;
+    border-radius: 10px;
+    border:none;
+    font-size:100%;
+    font-weight:bold;
+    color:white;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+#buttons {
+    height: 15%;
+    display:flex;
+    justify-content: space-between;
+}
+
+#job-application-content {
+    height:85%;
     overflow-y:auto;
 }
 
@@ -334,18 +396,6 @@ ul > li {
     margin: 10px 0;
 }
 
-
-button {
-    width:50%;
-    height:70px;
-    border-radius: 10px;
-    border:none;
-    font-size:100%;
-    font-weight:bold;
-    color:white;
-    transition: 0.2s;
-    cursor: pointer;
-}
 
 #shortlistButton:hover {
     background-color:#4cb074;

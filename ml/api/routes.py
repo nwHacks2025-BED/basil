@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from typing import List
 import pymongo
 
-from pymongo_fastapi_crud.models import UnlabeledJob, ProbabilityUpdate, LabelledJob
+from api.models import UnlabeledJob, ProbabilityUpdate, LabelledJob
 from client import database, close_connection
 
 import sys
@@ -39,6 +39,7 @@ class MongoAPI:
         response_description="Update probabilities for all entries",
         status_code=status.HTTP_200_OK
     )
+    
     def update_probabilities(
         updates: List[ProbabilityUpdate] = Body(...)
     ):

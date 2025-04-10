@@ -1,7 +1,7 @@
 var localShortlist = [];
 
 function onSkip() {
-    document.getElementById('job-application-content').classList.add('hidden');
+    
     showLoading();
     fetch('http://localhost:3000/skip', {
         method: 'POST',
@@ -22,6 +22,8 @@ function showLoadingWithDelay() {
 }
 
 function showLoading() {
+    document.getElementById('job-application-content').classList.add('hidden');
+    document.getElementById('buttons-form').classList.add('hidden');
     document.querySelector('.loader').style.display = 'inline-block';
     document.getElementById('loader-box').style.display = 'flex';
     showLoadingWithDelay();
@@ -29,13 +31,15 @@ function showLoading() {
 
 function hideLoading() {
     clearTimeout(loadingTimeout);
+    document.getElementById('job-application-content').classList.remove('hidden');
+    document.getElementById('buttons-form').classList.remove('hidden');
+
     document.querySelector('.loader').style.display = 'none';
     document.getElementById('loader-box').style.display = 'none';
     document.getElementById('finding-jobs').style.display = 'none';
 }
 
 function onShortlist() {
-    document.getElementById('job-application-content').classList.add('hidden');
     showLoading();
     fetch('http://localhost:3000/shortlist', {
         method: 'POST',
@@ -126,6 +130,14 @@ function setShortlist(shortlist) {
         li.appendChild(link);
         shortlistTable.appendChild(li);
     });
+}
+
+function sortJobs(field) {
+    if (field === 'date') {
+        
+    } else {
+
+    }
 }
 
 function removeShortlistEntry(posting, shortlistTable, li) {
@@ -222,7 +234,6 @@ function getBestPosting() {
     })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('job-application-content').classList.remove('hidden');
             hideLoading();
 
             document.getElementById('job-id-value').textContent = data.job_id;
@@ -235,17 +246,32 @@ function getBestPosting() {
             if (data['cover_letter_required?'] != 'Yes') {
                 document.getElementById('cover-letter').classList.add('hidden');
             }
-            document.getElementById('application-link-value').href = data.important_urls.split(',')[0];
+            if (data.important_urls) {
+                document.getElementById('application-link-value').href = data.important_urls.split(',')[0];
+                document.getElementById('application-link-value').target = '_blank';
+            } else {
+                document.getElementById('application-link-value').href = "https://scope.sciencecoop.ubc.ca/students/cwl-current-student-login.htm";
+            }
             document.getElementById('application-link-value').target = '_blank';
-            document.getElementById('job-description-trunc').textContent = data.job_description.substring(0, 1000) + '...';
-            if (data.job_description.length > 1000) {
+            const descriptionElement = document.getElementById('job-description-trunc');
+            const screenWidth = window.innerWidth;
+            
+            let descriptionLength = 3000;
+
+            if (screenWidth < 2000) {
+                descriptionLength = 1100;
+            } else if (screenWidth < 760) {
+                descriptionLength = 750;
+            }
+
+            descriptionElement.textContent = data.job_description.substring(0, descriptionLength) + '...';
+            if (data.job_description.length > descriptionLength) {
                 document.getElementById('readMoreButton').classList.remove('hidden');
                 document.getElementById('job-description-value').classList.add('hidden');
             } else {
                 document.getElementById('readMoreButton').classList.add('hidden');
                 document.getElementById('job-description-value').classList.remove('hidden');
             }
-
         })
         .catch(() => {
             document.getElementById('job-application-box').classList.add('hidden');
@@ -266,6 +292,14 @@ function toggleDescription() {
 }
 
 function createPane(posting) {
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            let existingPane = document.querySelector('.pane-overlay');
+            if (existingPane) {
+                existingPane.remove();
+            }
+        }
+    });
     let existingPane = document.querySelector('.pane-overlay');
     if (existingPane) {
         existingPane.remove();
